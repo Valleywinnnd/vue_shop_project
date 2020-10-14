@@ -77,7 +77,7 @@ export default {
     /* 获取菜单数据 */
     async getMenuList() {
       const { data: res } = await this.$http.get('menus')
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) return this.$message.error('获取菜单出错')
       this.menulist = res.data
     },

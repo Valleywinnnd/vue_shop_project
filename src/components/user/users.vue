@@ -94,6 +94,36 @@
         >
       </span>
     </el-dialog>
+    <!-- 分配用户权限对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="userInfoDialogVisble"
+      width="30%"
+      ref="setInfoRef"
+      @close="clearSet"
+    >
+      <div>
+        <p>当前的用户：{{ userInfo.username }}</p>
+        <p>当前的角色：{{ userInfo.role_name }}</p>
+        <p>
+          可选角色：<el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="userInfoDialogVisble = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
     <!-- 用户展示区域 -->
     <el-table :data="userlist" stripe border>
       <el-table-column type="index" label="#"> </el-table-column>
@@ -112,7 +142,7 @@
       </el-table-column>
       <el-table-column label="操作" width="180px">
         <template slot-scope="scope">
-           <!-- 修改用户按钮 -->
+          <!-- 修改用户按钮 -->
           <el-button
             type="primary"
             icon="el-icon-edit"
@@ -138,6 +168,7 @@
               type="warning"
               icon="el-icon-setting"
               size="mini"
+              @click="setRole(scope.row)"
             ></el-button>
           </el-tooltip>
         </template>
@@ -181,7 +212,7 @@ export default {
       queryUser: {
         query: '',
         pagenum: 1,
-        pagesize: 2
+        pagesize: 5
       },
       /* 用户列表 */
       userlist: [],
@@ -239,7 +270,15 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMoblie }
         ]
-      }
+      },
+      /* 控制分配角色Dialog的显示与隐藏 */
+      userInfoDialogVisble: false,
+      /* 需要分配权限的用户信息 */
+      userInfo: {},
+      /* 所有角色列表 */
+      rolesList: [],
+      /* 选中的角色id */
+      selectedRoleId: null
     }
   },
 
@@ -252,7 +291,6 @@ export default {
       const { data: res } = await this.$http.get('users', {
         params: this.queryUser
       })
-      // console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户信息失败')
       }
@@ -332,11 +370,15 @@ export default {
     /* 删除用户 */
     async removeUserById(id) {
       // console.log('点击了')
-      const confirmRes = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).catch(err => err)
+      const confirmRes = await this.$confirm(
+        '此操作将永久删除该文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
 
       if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
       // console.log('确认删除')
@@ -344,6 +386,36 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('删除用户失败')
       this.$message.success('删除用户成功')
       this.getUserList()
+    },
+    async setRole(userInfo) {
+      this.userInfo = userInfo
+      // console.log(userInfo)
+
+      // 展示对话框之前获取所有角色列表
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.rolesList = res.data
+      // console.log(this.rolesList)
+      this.$message.success('获取角色列表成功')
+      this.userInfoDialogVisble = true
+    },
+    /* 保存用户的角色 */
+    async saveRoleInfo() {
+      if (!this.selectedRoleId) this.$message.error('请选择角色')
+      console.log(this.userInfo)
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, {
+        rid: this.selectedRoleId
+      })
+      if (res.meta.status !== 200) this.$message.error('修改用户角色失败')
+      this.$message.success('修改用户角色成功')
+      this.getUserList()
+      this.userInfoDialogVisble = false
+    },
+    clearSet() {
+      console.log(this.$refs)
+      this.$refs.setInfoRef.resetFields()
     }
   }
 }

@@ -5,7 +5,9 @@ html, body, #app {
     padding: 0;
     margin: 0;
 }
-
+#app {
+    min-width: 1366px;
+}
 .el-breadcrumb {
     margin-bottom: 15px;
 }
@@ -19,5 +21,21 @@ html, body, #app {
 }
 
 .el-pagination {
+    margin-top: 15px;
+}
+
+.el-steps {
+    margin: 15px 0;
+}
+
+.el-step__title {
+    font-size: 13px;
+}
+
+.ql-editor {
+    min-height: 300px;
+}
+
+.add_btn {
     margin-top: 15px;
 }
