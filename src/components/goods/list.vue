@@ -137,7 +137,7 @@ export default {
         }
       ).catch(err => err)
 
-      if (confirmRes !== 'confirm') return this.$message.error('已取消删除')
+      if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
       const { data: res } = await this.$http.delete('goods/' + id)
       if (res.meta.status !== 200) return this.$message.error('删除商品失败')
       this.$message.success('商品删除成功')
@@ -151,5 +151,5 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 </style>

@@ -297,7 +297,7 @@ export default {
       const { data: res } = await this.$http.get('rights/tree')
       if (res.meta.status !== 200) return this.$message.error('获取权限失败')
       this.rightsList = res.data
-      this.$message.success('获取权限成功')
+      // this.$message.success('获取权限成功')
       this.getLeafKeys(role, this.defKeys)
       this.rightsDialogVisible = true
     },

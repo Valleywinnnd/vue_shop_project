@@ -5,6 +5,7 @@ import './plugins/element.js'
 import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
 import axios from 'axios'
+import treeTable from 'vue-table-with-tree-grid'
 /* 导入富文本编辑器 */
 import VueQuillEditor from 'vue-quill-editor'
 
@@ -24,6 +25,8 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios
 /* 将富文本注册为全局组件 */
 Vue.use(VueQuillEditor)
+
+Vue.component('tree-table', treeTable)
 
 Vue.filter('dateFormat', function (originalTime) {
   const dt = new Date(originalTime)
