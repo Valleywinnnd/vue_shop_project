@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../components/login.vue'
-import Home from '../components/home.vue'
-import Welcome from '../components/welcome.vue'
-import Users from '../components/user/users.vue'
-import Rights from '../components/power/rights.vue'
-import Roles from '../components/power/roles.vue'
-import Goodslist from '../components/goods/list.vue'
-import Addgoods from '../components/goods/add.vue'
-import Category from '../components/goods/category.vue'
+import Login from '../components/Login.vue'
+import Home from '../components/Home.vue'
+import Welcome from '../components/Welcome.vue'
+import Users from '../components/user/Users.vue'
+import Rights from '../components/power/Rights.vue'
+import Roles from '../components/power/Roles.vue'
+import Goodslist from '../components/goods/List.vue'
+import Addgoods from '../components/goods/Add.vue'
+import Category from '../components/goods/Category.vue'
+import Params from '../components/goods/Params.vue'
 
 Vue.use(VueRouter)
 
@@ -27,7 +28,8 @@ const router = new VueRouter({
         { path: '/roles', component: Roles },
         { path: '/goods', component: Goodslist },
         { path: '/goods/add', component: Addgoods },
-        { path: '/categories', component: Category }
+        { path: '/categories', component: Category },
+        { path: '/params', component: Params }
       ]
     }
   ]
