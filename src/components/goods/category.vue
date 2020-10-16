@@ -45,7 +45,11 @@
           <el-tag v-if="scope.row.cat_level === 2" type="warning">三级</el-tag>
         </template>
         <template slot="option" slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini"
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="editCateDialog(scope.row)"
             >编辑</el-button
           >
           <el-button
@@ -95,12 +99,34 @@
             @change="parentCateChange"
             clearable
             change-on-select
+            ref="cascaderRef"
           ></el-cascader>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addCate">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 编辑分类Dialog -->
+    <el-dialog
+      title="编辑分类"
+      :visible.sync="editCateDialogVisible"
+      width="50%"
+    >
+      <el-form
+        :model="editCateForm"
+        :rules="editCateRules"
+        ref="editCateRef"
+        label-width="100px"
+      >
+        <el-form-item label="分类名称" prop="cat_name">
+          <el-input v-model="editCateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -147,14 +173,27 @@ export default {
       ],
       // 添加商品分类dialog是否显示
       addCateDialogVisible: false,
+      // 编辑商品分类dialog是否显示
+      editCateDialogVisible: false,
       // 添加商品分类的输入表单
       addCateForm: {
         cat_name: '',
         cat_level: 0,
         cat_pid: 0
       },
+      // 编辑商品分类表单
+      editCateForm: {
+        cat_name: '',
+        cat_id: 0
+      },
       // 添加商品分类时的验证规则
       addCateRules: {
+        cat_name: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' }
+        ]
+      },
+      // 编辑商品分类时的验证规则
+      editCateRules: {
         cat_name: [
           { required: true, message: '请输入分类名称', trigger: 'blur' }
         ]
@@ -207,7 +246,7 @@ export default {
         return this.$message.error('请求分级分类参数失败')
       }
       this.parentcatelist = res.data
-      console.log(this.parentcatelist)
+      // console.log(this.parentcatelist)
     },
     // 选择父级分类参数时
     parentCateChange(selectValue) {
@@ -223,6 +262,8 @@ export default {
         // 为当前分类等级赋值
         this.addCateForm.cat_level = 0
       }
+      // console.log(this.$refs)
+      this.$refs.cascaderRef.dropDownVisible = false
     },
     // 添加分类
     addCate() {
@@ -241,6 +282,33 @@ export default {
           this.$message.success('添加分类成功')
           this.getCateList()
           this.addCateDialogVisible = false
+        }
+      })
+    },
+    // 编辑分类dialog显示
+    editCateDialog(row) {
+      // console.log(row)
+      this.editCateForm.cat_id = row.cat_id
+      this.editCateForm.cat_name = row.cat_name
+      this.editCateDialogVisible = true
+    },
+    // 修改分类
+    editCate() {
+      //   console.log(this.addCateForm)
+      this.$refs.editCateRef.validate(async valide => {
+        if (!valide) {
+          return false
+        } else {
+          const { data: res } = await this.$http.put(
+            'categories/' + this.editCateForm.cat_id,
+            { cat_name: this.editCateForm.cat_name }
+          )
+          if (res.meta.status !== 200) {
+            return this.$message.error('更新分类失败')
+          }
+          this.$message.success('更新分类成功')
+          this.getCateList()
+          this.editCateDialogVisible = false
         }
       })
     },
